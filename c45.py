@@ -13,6 +13,14 @@ def load_data(inputFile):
 	df = np.array([row for row in reader])
 	return df
 
+def get_classes(df):
+	X = list(df[:,1:])
+	classes_ = [None]
+	for i in zip(*X):
+		classes_.append(list(np.unique(i)))
+
+	return classes_
+
 def gain_ratio(df, attrIndex):
 	info_d = get_info(df)
 	df_branches = split_df(df, attrIndex)
@@ -85,23 +93,35 @@ def build_decision_tree(df, attribute_list, classes_):
 
 	return node
 
+def predict(X_test, root):
+	res = []
+	for x in X_test:
+		node = root
+		while node.criterion:
+			key = x[node.criterion-1]
+			node = node.children[key]
 
+		res.append(node.val)
 
-def get_classes(df):
-	X = list(df[:,1:])
-	classes_ = [None]
-	for i in zip(*X):
-		classes_.append(list(np.unique(i)))
+	return res
 
-	return classes_
+def score(result, y_test):
+	result = np.array(result)
+	y_test = np.array(y_test)
+	return sum(result == y_test)*100.0 / y_test.size
 
 def main():
 	## load data
-	inputFile = 'mushroom.training.txt'
-	df = load_data(inputFile)
+	trainFile = 'mushroom.training.txt'
+	df = load_data(trainFile)
 	classes_ = get_classes(df)
 	root = build_decision_tree(df, list(range(1,22)), classes_)
-	print(root.children)
+	testFile = 'mushroom.test.txt'
+	df_test = load_data(testFile)
+	X_test, y_test = df_test[:,1:], df_test[:, 0]
+	result = predict(X_test, root)
+
+	print("The accuracy rate for the decision tree model is {0} %".format(score(result, y_test)))
 	
 if __name__ == '__main__':
 	main()
