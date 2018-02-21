@@ -1,1 +1,1 @@
-# Decision Tree Implementatin for mushroom dataset
+# Decision Tree Implementation for mushroom dataset
