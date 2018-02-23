@@ -1,4 +1,5 @@
 import csv
+import sys
 import numpy as np
 
 class NaiveBayesian(object):
@@ -70,8 +71,14 @@ def load_data(inputFile):
 	return df
 
 def main():
+
+	if (len(sys.argv) < 4):
+		trainFile, testFile = 'mushroom.training.txt', 'mushroom.test.txt'
+		outputFile = 'bayesian.out'
+	else:
+		trainFile, testFile, outputFile = sys.argv[1:]
+
 	## load data
-	trainFile = 'mushroom.training.txt'
 	df = load_data(trainFile)
 
 	## Fit model
@@ -79,12 +86,15 @@ def main():
 	clf.fit(df)
 
 	## Testing 
-	testFile = 'mushroom.test.txt'
 	df_test = load_data(testFile)
 	X_test, y_test = df_test[:,1:], df_test[:, 0]
 	score = clf.score(X_test, y_test)
 
-	print("The accuracy rate for the decision tree model is {0} %".format(score))
+	with open(outputFile, 'w') as f:
+		f.write('\n'.join(clf.predict(X_test)))
+		f.write("\nThe accuracy rate for the naive bayesian model is {0:.2f} %".format(score))
+
+	print("The accuracy rate for the naive bayesian model is {0:.2f} %".format(score))
 
 if __name__ == '__main__':
 	main()

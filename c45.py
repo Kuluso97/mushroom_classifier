@@ -1,4 +1,5 @@
 import csv
+import sys
 import numpy as np
 
 class Node(object):
@@ -110,18 +111,28 @@ def score(result, y_test):
 	y_test = np.array(y_test)
 	return sum(result == y_test)*100.0 / y_test.size
 
+
 def main():
 	## load data
-	trainFile = 'mushroom.training.txt'
+	if (len(sys.argv) < 4):
+		trainFile, testFile = 'mushroom.training.txt', 'mushroom.test.txt'
+		outputFile = 'c45.out'
+	else:
+		trainFile, testFile, outputFile = sys.argv[1:]
+
 	df = load_data(trainFile)
 	classes_ = get_classes(df)
 	root = build_decision_tree(df, list(range(1,22)), classes_)
-	testFile = 'mushroom.test.txt'
+
 	df_test = load_data(testFile)
 	X_test, y_test = df_test[:,1:], df_test[:, 0]
 	result = predict(X_test, root)
 
-	print("The accuracy rate for the decision tree model is {0} %".format(score(result, y_test)))
+	with open(outputFile, 'w') as f:
+		f.write('\n'.join(result))
+		f.write("\nThe accuracy rate for the decision tree model is {0:.2f} %".format(score(result, y_test)))
+
+	print("The accuracy rate for the decision tree model is {0:.2f} %".format(score(result, y_test)))
 	
 if __name__ == '__main__':
 	main()
