@@ -1,3 +1,8 @@
+# Emory University CS378
+# Homework 2
+# Yicheng (Jason) Wang
+# NetId: ywan693
+
 import csv
 import sys
 import numpy as np
